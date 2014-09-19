@@ -1,4 +1,5 @@
 ---
 keypair: mbp
 region: ap-southeast-2
+www_port: 80
 archlinux_ami_id: ami-65d44a5f  # NB: this may depend on the region.

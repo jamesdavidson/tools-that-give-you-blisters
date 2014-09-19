@@ -15,6 +15,7 @@
       template_parameters:
         KeyName: "{{ keypair }}"
         Region: "{{ region }}"
+        PortNumber: "{{ www_port }}"
         AMI: "{{ archlinux_ami_id }}"
     register: stack
 

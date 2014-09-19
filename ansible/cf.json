@@ -8,6 +8,10 @@
             "Description": "Name of the AWS data center.",
             "Type": "String"
         },
+        "PortNumber": {
+          "Description": "The port the web site is served from.",
+          "Type": "String"
+        },
         "AMI": {
             "Description": "The identification number of the Linux AMI.",
             "Type": "String"
@@ -26,8 +30,12 @@
                   },
                   {
                   "IpProtocol" : "tcp",
-                  "FromPort" : "80",
-                  "ToPort" : "80",
+                  "FromPort" : {
+                    "Ref": "PortNumber"
+                  },
+                  "ToPort" : {
+                    "Ref": "PortNumber"
+                  },
                   "CidrIp" : "0.0.0.0/0"
                   }
                 ]
