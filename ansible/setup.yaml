@@ -1,0 +1,48 @@
+---
+- hosts: local
+  connection: local
+  gather_facts: false
+  vars_files:
+    - parameters.yaml
+  tasks:
+  - name: Provision the AWS CloudFormation.
+    cloudformation: stack_name="foo-tmp-123"
+                    state=present
+                    region="{{ region }}"
+                    disable_rollback=yes
+                    template=cf.json
+    args:
+      template_parameters:
+        KeyName: "{{ keypair }}"
+        Region: "{{ region }}"
+        AMI: "{{ archlinux_ami_id }}"
+    register: stack
+
+  - name: Add the provisioned instance to temporary inventory.
+    add_host: name={{ stack.stack_outputs['PublicIP'] }}
+              groups=freshly_provisioned
+              ansible_ssh_user=root
+              ansible_python_interpreter=/usr/bin/python2
+
+- hosts: freshly_provisioned
+  gather_facts: false
+  vars_files:
+    - parameters.yaml
+  tasks:
+  - name: Update the package manager.
+    raw: pacman -Sy --noconfirm
+
+  - name: Install Python2.
+    raw: pacman -S --noconfirm python2
+
+  - name: Ensure Apache and PHP are installed.
+    pacman: name=apache,php,php-apache state=installed
+
+  - name: Put the HTTPd config in place.
+    template: src=./httpd.conf.j2 dest=/etc/httpd/conf/httpd.conf
+
+  - name: Ensure the script is in place.
+    template: src=./index.php.j2 dest=/srv/http/index.php
+
+  - name: Start Apache
+    service: name=httpd.service state=restarted enabled=yes

@@ -1,0 +1,56 @@
+# Introduction
+
+The problem - getting PHP scripts live on Amazon Web Services.
+
+The solution - declarative formats for automation.
+
+# Ansible
+
+"App deployment, configuration management and orchestration." - Ansible.com
+
+Ansible is a command-line tool written in Python. It has lots of modules and
+great documentation. Ansible scripts are called playbooks. Playbooks are lists
+of commands stored as YAML data files.
+
+# Example
+
+In this repository the *setup.yaml* playbook has two parts. First, it provisions
+an EC2 Linux server. Then, it installs packages and uploads a PHP script.
+
+When the playbook provisions your Linux server it also configures the networking
+rules (including an elastic IP) and installs your SSH public-key. This is all
+specified in the *cloud-formation.json* file.
+
+Running the playbook again won't make it provision a new server, it will just
+check that your original server is still running and correctly configured.
+
+Similarly with the server's packages, if Apache is already installed then it
+won't try to reinstall it. The *setup.yaml* playbook is a checklist of sorts.
+
+# Usage
+
+Install Python2 using your package manager, then install pip using easy_install,
+then install Ansible and Boto using pip.
+
+  {brew|port|apt-get|yum|pacman} install python2
+  easy_install pip
+  pip install ansible boto
+
+Log in to the management console: http://console.aws.amazon.com/. Create a new
+keypair by uploading your public key (probably ~/.ssh/id_rsa.pub) and giving it
+a memorable name. I called mine *mbp* for MacBookPro. Put that name in the
+*parameters.yaml* file.
+
+To communicate with the AWS API, Ansible uses a library called Boto. You will
+need your AWS credentials in your ~/.boto file. You should be able to find them
+in the management console too. See the boto wiki for more information:
+http://docs.pythonboto.org/en/latest/boto_config_tut.html.
+
+Check the config options in parameters.yaml and then...
+
+  ansible-playbook setup.yaml
+
+### Notes
+
+Requires: Ansible ~v1.4 or ~v1.6.
+License: MIT.
