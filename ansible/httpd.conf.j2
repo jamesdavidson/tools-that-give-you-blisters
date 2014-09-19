@@ -1,5 +1,9 @@
-ServerRoot "/etc/httpd"
 Listen 80
+ServerRoot "/etc/httpd"
+DocumentRoot "/srv/http"
+ErrorLog "/var/log/httpd/error_log"
+LogLevel warn
+ServerAdmin you@example.com
 
 LoadModule authn_file_module modules/mod_authn_file.so
 LoadModule authn_core_module modules/mod_authn_core.so
@@ -48,14 +52,10 @@ User http
 Group http
 </IfModule>
 
-ServerAdmin you@example.com
-
 <Directory />
     AllowOverride none
     Require all denied
 </Directory>
-
-DocumentRoot "/srv/http"
 
 <Directory "/srv/http">
     Options Indexes FollowSymLinks
@@ -70,9 +70,6 @@ DocumentRoot "/srv/http"
 <Files ".ht*">
     Require all denied
 </Files>
-
-ErrorLog "/var/log/httpd/error_log"
-LogLevel warn
 
 <IfModule log_config_module>
     LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
