@@ -12,6 +12,9 @@ Ansible is a command-line tool written in Python. It has lots of modules and
 great documentation. Ansible scripts are called playbooks. Playbooks are lists
 of commands stored as YAML data files.
 
+One great thing about playbooks is that they are just text files, so you can
+keep them under source-control, along with your app.
+
 # Example
 
 In this repository the *setup.yaml* playbook has two parts. First, it provisions
@@ -19,7 +22,7 @@ an EC2 Linux server. Then, it installs packages and uploads a PHP script.
 
 When the playbook provisions your Linux server it also configures the networking
 rules (including an elastic IP) and installs your SSH public-key. This is all
-specified in the *cloud-formation.json* file.
+specified in the *cf.json* file (the CloudFormation manifest).
 
 Running the playbook again won't make it provision a new server, it will just
 check that your original server is still running and correctly configured.
@@ -36,21 +39,26 @@ then install Ansible and Boto using pip.
   easy_install pip
   pip install ansible boto
 
-Log in to the management console: http://console.aws.amazon.com/. Create a new
-keypair by uploading your public key (probably ~/.ssh/id_rsa.pub) and giving it
-a memorable name. I called mine *mbp* for MacBookPro. Put that name in the
-*parameters.yaml* file.
+Create a new keypair by logging in to the AWS management console and uploading
+the public-key you normally use for SSH (probably ~/.ssh/id_rsa.pub). Give it a
+name and then put that name in the *parameters.yaml* file. I called mine *mbp*
+for MacBookPro.
 
 To communicate with the AWS API, Ansible uses a library called Boto. You will
 need your AWS credentials in your ~/.boto file. You should be able to find them
-in the management console too. See the boto wiki for more information:
+in the AWS management console too. See the boto wiki for more information:
 http://docs.pythonboto.org/en/latest/boto_config_tut.html.
 
 Check the config options in parameters.yaml and then...
 
   ansible-playbook setup.yaml
 
+The first run might take a few minutes. If there are any errors then just try it
+again. You can see which resources are being created in the AWS management
+console. Cleaning up is easy because all the resources are created as a single
+CloudFormation. Have a look in the CloudFormation section of the management
+console and you'll see what I mean.
+
 ### Notes
 
-Requires: Ansible ~v1.4 or ~v1.6.
-License: MIT.
+Requires: Ansible ~v1.7.
